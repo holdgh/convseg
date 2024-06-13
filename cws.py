@@ -1,8 +1,11 @@
 from __future__ import print_function
-import os, codecs
-from itertools import izip
-from tagger import data_iterator
 
+import codecs
+import os
+# python3中没有python2.7中的izip，这里采用python3自带的zip
+# from itertools import izip
+
+from tagger import data_iterator
 
 scope = 'CWS'
 
@@ -139,9 +142,9 @@ def create_output(seqs, stags):
     Create final output from characters and BMES tags.
     """
     output = []
-    for seq, stag in izip(seqs, stags):
+    for seq, stag in zip(seqs, stags):
         new_sen = []
-        for c, tag in izip(seq, stag):
+        for c, tag in zip(seq, stag):
             new_sen.append(c)
             if tag == 'S' or tag == 'E':
                 new_sen.append('  ')

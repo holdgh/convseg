@@ -1,8 +1,11 @@
 #!coding=utf8
 from __future__ import print_function
-import sys, codecs
-import tensorflow as tf
+
+import codecs
+import sys
 from argparse import ArgumentParser
+
+import tensorflow as tf
 
 from tagger import Model
 

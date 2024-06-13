@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -* 
 from __future__ import print_function
-import StringIO
+import io
 from argparse import ArgumentParser
 import tornado.ioloop
 import tornado.web
@@ -69,7 +69,7 @@ class Tagger(object):
 
     def tag(self, sentences):
         sentences = self.preprocess(sentences)
-        sf = StringIO.StringIO()
+        sf = io.StringIO()
         sf.write(sentences)
         sf.seek(0)
         data = TASK.read_raw_file_all(sf)

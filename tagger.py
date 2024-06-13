@@ -1,13 +1,12 @@
 from __future__ import print_function
 import tensorflow as tf
-import tensorflow.contrib.layers as layers
-import tensorflow.contrib.crf as crf
+import tensorflow.keras.layers as layers
+import tensorflow_addons.text.crf as crf
 import time
 import codecs
 import os
-import cPickle as pickle
+import _pickle as pickle
 import numpy as np
-from itertools import izip
 
 INT_TYPE = np.int32
 FLOAT_TYPE = np.float32
@@ -58,7 +57,7 @@ class Model(object):
 
         hidden_output = inputs
         pre_channels = inputs.get_shape()[-1].value
-        for i in xrange(hidden_layers):
+        for i in range(hidden_layers):
 
             k = kernel_size
             cur_channels = channels[i]
@@ -197,7 +196,7 @@ class Model(object):
             with tf.variable_scope(self.scope, reuse=True):
                 transitions = tf.get_variable('transitions').eval(session=self.sess)
             paths = np.zeros(scores.shape[:2], dtype=INT_TYPE)
-            for i in xrange(scores.shape[0]):
+            for i in range(scores.shape[0]):
                 tag_score, length = scores[i], sequence_lengths[i]
                 if length == 0:
                     continue
@@ -514,7 +513,7 @@ class Model(object):
                 feed_dict[pl] = v.astype(INT_TYPE)
             scores = self.sess.run(self.scores_op, feed_dict)
             stag_ids = self.inference(scores, seq_lengths)
-            for seq, stag_id, length in izip(data[0], stag_ids, seq_lengths):
+            for seq, stag_id, length in zip(data[0], stag_ids, seq_lengths):
                 output.append((seq, [self.id2tag[t] for t in stag_id[:length]]))
             yield zip(*output)
             output = []
@@ -578,7 +577,7 @@ def create_input(batch):
     ret = []
     for d in batch:
         dd = []
-        for seq_id, pos in izip(d, lengths):
+        for seq_id, pos in zip(d, lengths):
             assert len(seq_id) == pos
             pad = [0] * (max_len - pos)
             dd.append(seq_id + pad)
@@ -600,7 +599,7 @@ def data_to_ids(data, mappings):
                 inside_code = 32
             elif 65281 <= inside_code <= 65374:
                 inside_code -= 65248
-            rstring += unichr(inside_code)
+            rstring += chr(inside_code)
         return rstring
 
     def strB2Q(ustring):
@@ -611,7 +610,7 @@ def data_to_ids(data, mappings):
                 inside_code = 12288
             elif 32 <= inside_code <= 126:
                 inside_code += 65248
-            rstring += unichr(inside_code)
+            rstring += chr(inside_code)
         return rstring
 
     def map(item, mapping):
@@ -629,7 +628,7 @@ def data_to_ids(data, mappings):
         return [[map(item, mapping) for item in seq] for seq in seqs]
 
     ret = []
-    for d, m in izip(data, mappings):
+    for d, m in zip(data, mappings):
         ret.append(map_seq(d, m))
     return tuple(ret)
 
