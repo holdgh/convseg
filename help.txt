@@ -1,0 +1,11 @@
+问题：ValueError: source code string cannot contain null bytes
+方案：包文件编码问题，因为安装过程异常，导致包文件编码异常。根据启动日志找到报错的包【有时不能明显找到，需要在日志中最后的代码处打断点，调试直至出现异常，观察对应包名的相关变量值，以此找到要处理的依赖包】，使用pip uninstall 卸载包，然后pip install重新安装该包即可。
+
+问题：导出requirements.txt文件，内含依赖包及版本号列表
+方案：pip freeze > requirements.txt
+
+问题：TypeError: Descriptors cannot be created directly.
+方案：相应依赖包版本过高，导致编译错误。按照日志提示建议，安装相应版本的依赖包
+
+问题：pip卸载依赖包过程中出现_csv.Error: line contains NUL
+方案：找到lib文件夹，手动删除相关包文件
