@@ -1,6 +1,6 @@
 from __future__ import print_function
 import tensorflow as tf
-import tensorflow.keras.layers as layers
+import keras.layers as layers
 import tensorflow_addons.text.crf as crf
 import time
 import codecs
