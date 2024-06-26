@@ -211,11 +211,26 @@ class Model(object):
         """
         This function is the main function for preparing data and training the model.
         """
+        # 断言：声道列表长度等于隐藏层层数
         assert len(channels) == hidden_layers
 
         # Parse optimization method and parameters.
+        # adam_0.001 ['adam', '0.001']
         optimizer = optimizer.split('_')
         optimizer_name = optimizer[0]
+        """
+         eval(expression, globals=None, locals=None)
+            参数:    expression (str | code object) -- 一个 Python 表达式。
+                    globals (dict | None) -- 全局命名空间 (默认值: None)。
+                    locals (mapping | None) -- 局部命名空间 (默认值: None)。
+            返回: 被求值表达式的求值结果。
+            引发: Syntax errors are reported as exceptions.
+            表达式解析参数 expression 并作为 Python 表达式进行求值（从技术上说是一个条件列表），采用 globals 和 locals 字典作为全局和局部命名空间。 
+                如果存在 globals 字典，并且不包含 __builtins__ 键的值，则在解析 expression 之前会插入以该字符串为键以对内置模块 builtins 的字典的引用为值的项。 这样就可以在将 globals 传给 eval() 之前通过向其传入你自己的 __builtins__ 字典来控制可供被执行代码可以使用哪些内置模块。 
+                如果 locals 字典被省略则它默认为 globals 字典。
+                如果两个字典都被省略，则将使用调用 eval() 的环境中的 globals 和 locals 来执行该表达式。 注意，eval() 无法访问闭包环境中的 嵌套作用域 (非局部变量)。
+        """
+        # 优化器选择及参数设置
         optimizer_options = [eval(i) for i in optimizer[1:]]
         optimizer = {
             'sgd': tf.train.GradientDescentOptimizer,
@@ -225,22 +240,33 @@ class Model(object):
         }[optimizer_name](*optimizer_options)
 
         print('Preparing data...', end='')
+        # 模型保存目录，不存在，则创建
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
 
         mappings_path = os.path.join(model_dir, 'mappings.pkl')
         parameters_path = os.path.join(model_dir, 'parameters.pkl')
 
-        # Load character embeddings.
+        # Load character embeddings.加载字符嵌入
         pre_trained = {}
         if pre_trained_emb_path and os.path.isfile(pre_trained_emb_path):
+            # 以utf8方式入去字符嵌入文件
             for l in codecs.open(pre_trained_emb_path, 'r', 'utf8'):
+                # 按照空格将当前行分隔成列表
                 we = l.split()
+                # emb_size默认值200，如果当前行按照空格分隔的列表元素个数等于201
                 if len(we) == emb_size + 1:
+                    """
+                     map(function, iterable, *iterables)
+                        返回一个将 function 应用于 iterable 的每一项，并产生其结果的迭代器。 如果传入了额外的 iterables 参数，则 function 必须接受相同个数的参数并被用于到从所有可迭代对象中并行获取的项。 当有多个可迭代对象时，当最短的可迭代对象耗尽则整个迭代将会停止。
+                     例如：
+                        a=[1, 2, 3, 4, 5]
+                        则list(map(float, a))为[1.0, 2.0, 3.0, 4.0, 5.0]
+                    """
                     w, e = we[0], np.array(map(float, we[1:]))
                     pre_trained[w] = e
 
-        # Load word embeddings.
+        # Load word embeddings.加载词嵌入
         pre_trained_word = {}
         if pre_trained_word_emb_path and os.path.isfile(pre_trained_word_emb_path):
             for l in codecs.open(pre_trained_word_emb_path, 'r', 'utf8', 'ignore'):

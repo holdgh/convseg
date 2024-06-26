@@ -106,16 +106,23 @@ if __name__ == '__main__':
     """
     # sess = tf.Session()
     sess = tf.compat.v1.Session()
+    # 创建并初始化模型
     model = Model(TASK.scope, sess)
     # 训练模型
-    model.train(train_data=train_data,
+    model.train(
+        # 数据参数
+        train_data=train_data,
                 dev_data=dev_data,
                 test_data=test_data,
+                # 模型和日志目录参数
                 model_dir=args.model_root + '/models',
                 log_dir=args.model_root + '/logs',
+                # 词嵌入参数
                 emb_size=args.emb_size,
                 word_emb_size=args.word_emb_size,
+                # 网络和训练参数
                 hidden_layers=args.hidden_layers,
+                # 将声道参数扩展为列表，元素个数为args.hidden_layers。例如：[200]*5 等于 [200, 200, 200, 200, 200]
                 channels=[args.channels] * args.hidden_layers,
                 kernel_size=args.kernel_size,
                 use_bn=args.use_bn,
@@ -130,10 +137,12 @@ if __name__ == '__main__':
                 evaluator=TASK.evaluator,
                 eval_batch_size=args.eval_batch_size,
                 print_freq=50,
+                # 词嵌入路径参数
                 pre_trained_emb_path=args.pre_trained_emb_path,
                 pre_trained_word_emb_path=args.pre_trained_word_emb_path,
                 fix_word_emb=args.fix_word_emb,
                 reserve_all_word_emb=args.reserve_all_word_emb,
+                # 迭代参数
                 max_epoches=args.max_epoches)
     # 关闭会话
     sess.close()
